@@ -32,7 +32,7 @@ final public class Future<Value>: NSLocking {
 	fileprivate var failure = [(DispatchQueue?, (Error) -> Void)]()
 	fileprivate var finally = [(DispatchQueue?, () -> Void)]()
 	
-	public init(_ state: FutureState<Value> = .pending) {
+	public init(_ state: FutureState<Value>) {
 		self.state = state
 	}
 	
@@ -181,8 +181,14 @@ final public class Future<Value>: NSLocking {
 	}
 }
 
+extension Future where Value == Void {
+	public convenience init() {
+		self.init(.success(()))
+	}
+}
+
 open class Promise<Value> {
-	open var future = Future<Value>()
+	open var future = Future<Value>(.pending)
 	
 	public init() {}
 	
