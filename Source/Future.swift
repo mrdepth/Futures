@@ -49,7 +49,7 @@ final public class Future<Value>: NSLocking {
 	}
 	
 	public func get(until: Date = .distantFuture) throws -> Value {
-		return try condition.perform {
+		return try condition.performCritical {
 			while case .pending = state, Date() < until {
 				condition.wait(until: until)
 			}
@@ -65,7 +65,7 @@ final public class Future<Value>: NSLocking {
 	}
 	
 	public func wait(until: Date = .distantFuture) {
-		condition.perform {
+		condition.performCritical {
 			while case .pending = state, Date() < until {
 				condition.wait(until: until)
 			}
@@ -104,7 +104,7 @@ final public class Future<Value>: NSLocking {
 			}
 		}
 		
-		condition.perform { () -> (() -> Void)? in
+		condition.performCritical { () -> (() -> Void)? in
 			switch state {
 			case let .success(value):
 				return {
@@ -133,7 +133,7 @@ final public class Future<Value>: NSLocking {
 	
 	@discardableResult
 	public func `catch`(on queue: DispatchQueue? = nil, _ execute: @escaping (Error) -> Void) -> Self {
-		condition.perform { () -> (() -> Void)? in
+		condition.performCritical { () -> (() -> Void)? in
 			switch state {
 			case let .failure(error):
 				return {
@@ -159,7 +159,7 @@ final public class Future<Value>: NSLocking {
 	@discardableResult
 	public func finally(on queue: DispatchQueue? = nil, _ execute: @escaping () -> Void) -> Self {
 		
-		condition.perform { () -> (() -> Void)? in
+		condition.performCritical { () -> (() -> Void)? in
 			switch state {
 			case .success, .failure:
 				return {
@@ -193,7 +193,7 @@ open class Promise<Value> {
 	public init() {}
 	
 	open func fulfill(_ value: Value) throws {
-		try future.perform { () -> () -> Void in
+		try future.performCritical { () -> () -> Void in
 			guard case .pending = future.state else { throw FutureError.promiseAlreadySatisfied }
 			defer {
 				future.success = []
@@ -232,7 +232,7 @@ open class Promise<Value> {
 	}
 	
 	open func fail(_ error: Error) throws {
-		try future.perform { () -> () -> Void in
+		try future.performCritical { () -> () -> Void in
 			guard case .pending = future.state else { throw FutureError.promiseAlreadySatisfied }
 			defer {
 				future.success = []
@@ -348,7 +348,7 @@ extension DispatchQueue {
 
 extension NSLocking {
 	@discardableResult
-	public func perform<Value>(_ execute: () throws -> Value) rethrows -> Value {
+	public func performCritical<T>(_ execute: () throws -> T) rethrows -> T {
 		lock(); defer { unlock() }
 		return try execute()
 	}
