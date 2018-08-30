@@ -64,6 +64,19 @@ final public class Future<Value>: NSLocking {
 		}
 	}
 	
+	public func tryGet() throws -> Value? {
+		return try condition.performCritical {
+			switch state {
+			case let .success(value):
+				return value
+			case let .failure(error):
+				throw error
+			default:
+				return nil
+			}
+		}
+	}
+	
 	public func wait(until: Date = .distantFuture) {
 		condition.performCritical {
 			while case .pending = state, Date() < until {
