@@ -367,8 +367,8 @@ extension NSLocking {
 	}
 }
 
-public func all<A>(_ a: Future<A>) -> Future<[A]> {
-	return a.then { return [$0] }
+public func all<A>(_ a: Future<A>) -> Future<A> {
+	return a.then { return $0 }
 }
 
 public func all<A, B>(_ a: Future<A>, _ b: Future<B>) -> Future<(A, B)> {
@@ -447,6 +447,152 @@ public func all<S, Value>(_ futures: S) -> Future<[Value]> where S: Sequence, S.
 				}.catch {error in
 					try! promise.fail(error)
 					pop = nil
+			}
+		}
+		else {
+			try! promise.fulfill(values)
+			pop = nil
+		}
+	}
+	pop()
+	return promise.future
+}
+
+public func any<A>(_ a: Future<A>) -> Future<A?> {
+	let promise = Promise<A?>()
+	a.then {
+		try! promise.fulfill($0)
+	}.catch { _ in
+		try! promise.fulfill(nil)
+	}
+	return promise.future
+}
+
+public func any<A, B>(_ a: Future<A>, _ b: Future<B>) -> Future<(A?, B?)> {
+	var aResult: A?
+	var bResult: B?
+	let promise = Promise<(A?, B?)>()
+	a.then { aResult = $0 }
+		.finally {
+			b.then { bResult = $0 }
+				.finally {
+					try! promise.fulfill((aResult, bResult))
+			}
+	}
+	return promise.future
+}
+
+public func any<A, B, C>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>) -> Future<(A?, B?, C?)> {
+	var aResult: A?
+	var bResult: B?
+	var cResult: C?
+	let promise = Promise<(A?, B?, C?)>()
+	a.then { aResult = $0 }
+		.finally {
+			b.then { bResult = $0 }
+				.finally {
+					c.then { cResult = $0 }
+						.finally {
+							try! promise.fulfill((aResult, bResult, cResult))
+					}
+			}
+	}
+	return promise.future
+}
+
+public func any<A, B, C, D>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _ d: Future<D>) -> Future<(A?, B?, C?, D?)> {
+	var aResult: A?
+	var bResult: B?
+	var cResult: C?
+	var dResult: D?
+	let promise = Promise<(A?, B?, C?, D?)>()
+	a.then { aResult = $0 }
+		.finally {
+			b.then { bResult = $0 }
+				.finally {
+					c.then { cResult = $0 }
+						.finally {
+							d.then { dResult = $0 }
+								.finally {
+									try! promise.fulfill((aResult, bResult, cResult, dResult))
+							}
+					}
+			}
+	}
+	return promise.future
+}
+
+public func any<A, B, C, D, E>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _ d: Future<D>, _ e: Future<E>) -> Future<(A?, B?, C?, D?, E?)> {
+	var aResult: A?
+	var bResult: B?
+	var cResult: C?
+	var dResult: D?
+	var eResult: E?
+	let promise = Promise<(A?, B?, C?, D?, E?)>()
+	a.then { aResult = $0 }
+		.finally {
+			b.then { bResult = $0 }
+				.finally {
+					c.then { cResult = $0 }
+						.finally {
+							d.then { dResult = $0 }
+								.finally {
+									e.then { eResult = $0 }
+										.finally {
+											try! promise.fulfill((aResult, bResult, cResult, dResult, eResult))
+									}
+							}
+					}
+			}
+	}
+	return promise.future
+}
+
+public func all<A, B, C, D, E, F>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _ d: Future<D>, _ e: Future<E>, _ f: Future<F>) -> Future<(A?, B?, C?, D?, E?, F?)> {
+	var aResult: A?
+	var bResult: B?
+	var cResult: C?
+	var dResult: D?
+	var eResult: E?
+	var fResult: F?
+	let promise = Promise<(A?, B?, C?, D?, E?, F?)>()
+	a.then { aResult = $0 }
+		.finally {
+			b.then { bResult = $0 }
+				.finally {
+					c.then { cResult = $0 }
+						.finally {
+							d.then { dResult = $0 }
+								.finally {
+									e.then { eResult = $0 }
+										.finally {
+											f.then { fResult = $0 }
+												.finally {
+													try! promise.fulfill((aResult, bResult, cResult, dResult, eResult, fResult))
+											}
+									}
+							}
+					}
+			}
+	}
+	return promise.future
+}
+
+public func any<S, Value>(_ futures: S) -> Future<[Value?]> where S: Sequence, S.Element == Future<Value> {
+	let promise = Promise<[Value?]>()
+	var values = [Value?]()
+	
+	var pop: (() -> Void)!
+	var i = futures.makeIterator()
+	
+	pop = {
+		if let next = i.next() {
+			next.then { result in
+				values.append(result)
+				pop()
+			}.catch {error in
+				values.append(nil)
+				pop()
 			}
 		}
 		else {
