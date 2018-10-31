@@ -548,7 +548,7 @@ public func any<A, B, C, D, E>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _
 	return promise.future
 }
 
-public func all<A, B, C, D, E, F>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _ d: Future<D>, _ e: Future<E>, _ f: Future<F>) -> Future<(A?, B?, C?, D?, E?, F?)> {
+public func any<A, B, C, D, E, F>(_ a: Future<A>, _ b: Future<B>, _ c: Future<C>, _ d: Future<D>, _ e: Future<E>, _ f: Future<F>) -> Future<(A?, B?, C?, D?, E?, F?)> {
 	var aResult: A?
 	var bResult: B?
 	var cResult: C?
