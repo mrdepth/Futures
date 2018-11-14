@@ -49,17 +49,27 @@ final public class Future<Value>: NSLocking {
 	}
 	
 	public func get(until: Date = .distantFuture) throws -> Value {
-		return try condition.performCritical {
-			while case .pending = state, Date() < until {
-				condition.wait(until: until)
-			}
-			switch state {
-			case let .success(value):
-				return value
-			case let .failure(error):
-				throw error
-			case .pending:
-				throw FutureError.timeout
+		if Thread.isMainThread {
+			repeat {
+				if let value = try tryGet() {
+					return value
+				}
+			} while RunLoop.current.run(mode: RunLoop.current.currentMode ?? .default, before: until)
+			throw FutureError.timeout
+		}
+		else {
+			return try condition.performCritical {
+				while case .pending = state, Date() < until {
+					condition.wait(until: until)
+				}
+				switch state {
+				case let .success(value):
+					return value
+				case let .failure(error):
+					throw error
+				case .pending:
+					throw FutureError.timeout
+				}
 			}
 		}
 	}
