@@ -9,13 +9,28 @@
 /* Begin PBXBuildFile section */
 		123304F021146A6E00CB784A /* Futures.h in Headers */ = {isa = PBXBuildFile; fileRef = 123304EE21146A6E00CB784A /* Futures.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		123304F821146B8900CB784A /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 123304F721146B8900CB784A /* Future.swift */; };
+		1239C3AF21E4D6EE00BB391D /* FuturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1239C3AE21E4D6EE00BB391D /* FuturesTests.swift */; };
+		1239C3B121E4D6EE00BB391D /* Futures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 123304EB21146A6E00CB784A /* Futures.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1239C3B221E4D6EE00BB391D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 123304E221146A6E00CB784A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 123304EA21146A6E00CB784A;
+			remoteInfo = Futures;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		123304EB21146A6E00CB784A /* Futures.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Futures.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		123304EE21146A6E00CB784A /* Futures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Futures.h; sourceTree = "<group>"; };
 		123304EF21146A6E00CB784A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		123304F721146B8900CB784A /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
+		1239C3AC21E4D6EE00BB391D /* FuturesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FuturesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1239C3AE21E4D6EE00BB391D /* FuturesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuturesTests.swift; sourceTree = "<group>"; };
+		1239C3B021E4D6EE00BB391D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +41,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1239C3A921E4D6EE00BB391D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1239C3B121E4D6EE00BB391D /* Futures.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				123304ED21146A6E00CB784A /* Source */,
+				1239C3AD21E4D6EE00BB391D /* FuturesTests */,
 				123304EC21146A6E00CB784A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				123304EB21146A6E00CB784A /* Futures.framework */,
+				1239C3AC21E4D6EE00BB391D /* FuturesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -53,6 +78,15 @@
 				123304F721146B8900CB784A /* Future.swift */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		1239C3AD21E4D6EE00BB391D /* FuturesTests */ = {
+			isa = PBXGroup;
+			children = (
+				1239C3AE21E4D6EE00BB391D /* FuturesTests.swift */,
+				1239C3B021E4D6EE00BB391D /* Info.plist */,
+			);
+			path = FuturesTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -87,18 +121,40 @@
 			productReference = 123304EB21146A6E00CB784A /* Futures.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		1239C3AB21E4D6EE00BB391D /* FuturesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1239C3B621E4D6EE00BB391D /* Build configuration list for PBXNativeTarget "FuturesTests" */;
+			buildPhases = (
+				1239C3A821E4D6EE00BB391D /* Sources */,
+				1239C3A921E4D6EE00BB391D /* Frameworks */,
+				1239C3AA21E4D6EE00BB391D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1239C3B321E4D6EE00BB391D /* PBXTargetDependency */,
+			);
+			name = FuturesTests;
+			productName = FuturesTests;
+			productReference = 1239C3AC21E4D6EE00BB391D /* FuturesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		123304E221146A6E00CB784A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Artem Shimanski";
 				TargetAttributes = {
 					123304EA21146A6E00CB784A = {
 						CreatedOnToolsVersion = 9.4;
 						LastSwiftMigration = 1000;
+					};
+					1239C3AB21E4D6EE00BB391D = {
+						CreatedOnToolsVersion = 10.1;
 					};
 				};
 			};
@@ -115,12 +171,20 @@
 			projectRoot = "";
 			targets = (
 				123304EA21146A6E00CB784A /* Futures */,
+				1239C3AB21E4D6EE00BB391D /* FuturesTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		123304E921146A6E00CB784A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1239C3AA21E4D6EE00BB391D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,7 +202,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1239C3A821E4D6EE00BB391D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1239C3AF21E4D6EE00BB391D /* FuturesTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1239C3B321E4D6EE00BB391D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 123304EA21146A6E00CB784A /* Futures */;
+			targetProxy = 1239C3B221E4D6EE00BB391D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		123304F121146A6E00CB784A /* Debug */ = {
@@ -316,6 +396,47 @@
 			};
 			name = Release;
 		};
+		1239C3B421E4D6EE00BB391D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YB4RLQ4M9A;
+				INFOPLIST_FILE = FuturesTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimanski.FuturesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1239C3B521E4D6EE00BB391D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YB4RLQ4M9A;
+				INFOPLIST_FILE = FuturesTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimanski.FuturesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -333,6 +454,15 @@
 			buildConfigurations = (
 				123304F421146A6E00CB784A /* Debug */,
 				123304F521146A6E00CB784A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1239C3B621E4D6EE00BB391D /* Build configuration list for PBXNativeTarget "FuturesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1239C3B421E4D6EE00BB391D /* Debug */,
+				1239C3B521E4D6EE00BB391D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

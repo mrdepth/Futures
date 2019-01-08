@@ -54,7 +54,7 @@ final public class Future<Value>: NSLocking {
 				if let value = try tryGet() {
 					return value
 				}
-			} while RunLoop.current.run(mode: RunLoop.current.currentMode ?? .default, before: until)
+			} while RunLoop.current.run(mode: RunLoop.current.currentMode ?? .default, before: until) && Date() < until
 			throw FutureError.timeout
 		}
 		else {
