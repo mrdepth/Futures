@@ -50,6 +50,13 @@ final public class Future<Value>: NSLocking {
 	
 	public func get(until: Date = .distantFuture) throws -> Value {
 		if Thread.isMainThread {
+			var cancel = false
+			finally(on: DispatchQueue.global(qos: .userInteractive)) {
+				if !cancel {
+					DispatchQueue.main.async {}
+				}
+			}
+			defer {cancel = true}
 			repeat {
 				if let value = try tryGet() {
 					return value
@@ -88,9 +95,29 @@ final public class Future<Value>: NSLocking {
 	}
 	
 	public func wait(until: Date = .distantFuture) {
-		condition.performCritical {
-			while case .pending = state, Date() < until {
-				condition.wait(until: until)
+		if Thread.isMainThread {
+			var cancel = false
+			finally(on: DispatchQueue.global(qos: .userInteractive)) {
+				if !cancel {
+					DispatchQueue.main.async {}
+				}
+			}
+			defer {cancel = true}
+			repeat {
+				let state = condition.performCritical { self.state }
+				if case .pending = state {
+					continue
+				}
+				else {
+					break
+				}
+			} while RunLoop.current.run(mode: RunLoop.current.currentMode ?? .default, before: until) && Date() < until
+		}
+		else {
+			condition.performCritical {
+				while case .pending = state, Date() < until {
+					condition.wait(until: until)
+				}
 			}
 		}
 	}
@@ -131,14 +158,7 @@ final public class Future<Value>: NSLocking {
 			switch state {
 			case let .success(value):
 				return {
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							onSuccess(value)
-						}
-					}
-					else {
-						onSuccess(value)
-					}
+					enqueue(on: queue, onSuccess(value))
 				}
 			case let .failure(error):
 				return {
@@ -160,14 +180,7 @@ final public class Future<Value>: NSLocking {
 			switch state {
 			case let .failure(error):
 				return {
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							execute(error)
-						}
-					}
-					else {
-						execute(error)
-					}
+					enqueue(on: queue, execute(error))
 				}
 			case .success:
 				return nil
@@ -186,14 +199,7 @@ final public class Future<Value>: NSLocking {
 			switch state {
 			case .success, .failure:
 				return {
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							execute()
-						}
-					}
-					else {
-						execute()
-					}
+					enqueue(on: queue, execute())
 				}
 			case .pending:
 				finally.append((queue, execute))
@@ -231,24 +237,10 @@ open class Promise<Value> {
 			
 			return {
 				execute.forEach { (queue, block) in
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							block(value)
-						}
-					}
-					else {
-						block(value)
-					}
+					enqueue(on: queue, block(value))
 				}
 				finally.forEach { (queue, block) in
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							block()
-						}
-					}
-					else {
-						block()
-					}
+					enqueue(on: queue, block())
 				}
 			}
 		}()
@@ -269,24 +261,10 @@ open class Promise<Value> {
 			let finally = self.future.finally
 			return {
 				execute.forEach { (queue, block) in
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							block(error)
-						}
-					}
-					else {
-						block(error)
-					}
+					enqueue(on: queue, block(error))
 				}
 				finally.forEach { (queue, block) in
-					if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
-						queue.async {
-							block()
-						}
-					}
-					else {
-						block()
-					}
+					enqueue(on: queue, block())
 				}
 			}
 		}()
@@ -612,4 +590,15 @@ public func any<S, Value>(_ futures: S) -> Future<[Value?]> where S: Sequence, S
 	}
 	pop()
 	return promise.future
+}
+
+func enqueue(on queue: DispatchQueue?, _ execute: @autoclosure @escaping () -> Void ) {
+	if let queue = queue, queue != DispatchQueue.main || !Thread.isMainThread {
+		queue.async {
+			execute()
+		}
+	}
+	else {
+		execute()
+	}
 }
