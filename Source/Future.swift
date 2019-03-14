@@ -607,12 +607,12 @@ func enqueue(on queue: DispatchQueue?, _ execute: @autoclosure @escaping () -> V
 
 final public class PromisedOperation<T>: Operation {
     public class State {
-        var isCancelled: Bool {
+        public var isCancelled: Bool {
             return operation?.isCancelled != true
         }
         
         private weak var operation: Operation?
-        init(operation: Operation) {
+        fileprivate init(operation: Operation) {
             self.operation = operation
         }
     }
