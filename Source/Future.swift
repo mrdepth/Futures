@@ -606,39 +606,40 @@ func enqueue(on queue: DispatchQueue?, _ execute: @autoclosure @escaping () -> V
 
 
 final public class PromisedOperation<T>: Operation {
-    public class State {
-        public var isCancelled: Bool {
-            return operation?.isCancelled != true
-        }
-        
-        private weak var operation: Operation?
-        fileprivate init(operation: Operation) {
-            self.operation = operation
-        }
-    }
     
     public let future: Future<T>
     private var result: T?
-    private var block: ((State) -> T)?
+    private var error: Error?
+    private var block: ((PromisedOperation) throws -> T)?
     
-    public init(block: @escaping (State) -> T) {
+    public init(block: @escaping (PromisedOperation) throws -> T) {
         let promise = Promise<T>()
         future = promise.future
         self.block = block
         super.init()
         completionBlock = { [weak self] in
-            if let result = self?.result, self?.isCancelled == false {
+            print(self!.isFinished)
+            guard let strongSelf = self else {
+                try? promise.fail(FutureError.cancelled)
+                return
+            }
+            if let result = strongSelf.result {
                 try? promise.fulfill(result)
             }
             else {
-                try? promise.fail(FutureError.cancelled)
+                try? promise.fail(strongSelf.error ?? FutureError.cancelled)
             }
         }
     }
     
     public override func main() {
         guard !isCancelled else {return}
-        result = block?(State(operation: self))
+        do {
+            result = try block?(self)
+        }
+        catch {
+            self.error = error
+        }
         block = nil
     }
 }
