@@ -129,5 +129,43 @@ class FuturesTests: XCTestCase {
 		
 		wait(for: [exp], timeout: 10)
 	}
+    
+    func testPromisedOperation() {
+        let exp1 = expectation(description: "end")
+        let exp2 = expectation(description: "end")
+        let exp3 = expectation(description: "end")
+        let operationQueue = OperationQueue(qos: .utility, maxConcurrentOperationCount: 1)
+        let op1 = PromisedOperation { _ in
+            Thread.sleep(forTimeInterval: 1)
+        }
+        let op2 = PromisedOperation { _ in
+            Thread.sleep(forTimeInterval: 1)
+        }
+        let op3 = PromisedOperation { _ in 1 }
+        
+        op1.future.then {
+            XCTFail()
+        }.catch { error in
+            XCTAssertTrue((error as? FutureError) == .cancelled)
+            exp1.fulfill()
+        }
+        op2.future.then {
+            XCTFail()
+        }.catch { error in
+            XCTAssertTrue((error as? FutureError) == .cancelled)
+            exp2.fulfill()
+        }
+        op3.future.then { result in
+            XCTAssertEqual(result, 1)
+            exp3.fulfill()
+        }
+        
+        operationQueue.addOperation(op1)
+        operationQueue.addOperation(op2)
+        operationQueue.cancelAllOperations()
+        operationQueue.addOperation(op3)
+        
+        wait(for: [exp1, exp2, exp3], timeout: 3)
+    }
 	
 }

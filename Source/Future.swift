@@ -11,6 +11,7 @@ import Foundation
 public enum FutureError: Error {
 	case promiseAlreadySatisfied
 	case timeout
+    case cancelled
 }
 
 public enum FutureState<Value> {
@@ -601,4 +602,43 @@ func enqueue(on queue: DispatchQueue?, _ execute: @autoclosure @escaping () -> V
 	else {
 		execute()
 	}
+}
+
+
+final public class PromisedOperation<T>: Operation {
+    public class State {
+        var isCancelled: Bool {
+            return operation?.isCancelled != true
+        }
+        
+        private weak var operation: Operation?
+        init(operation: Operation) {
+            self.operation = operation
+        }
+    }
+    
+    public let future: Future<T>
+    private var result: T?
+    private var block: ((State) -> T)?
+    
+    public init(block: @escaping (State) -> T) {
+        let promise = Promise<T>()
+        future = promise.future
+        self.block = block
+        super.init()
+        completionBlock = { [weak self] in
+            if let result = self?.result, self?.isCancelled == false {
+                try? promise.fulfill(result)
+            }
+            else {
+                try? promise.fail(FutureError.cancelled)
+            }
+        }
+    }
+    
+    public override func main() {
+        guard !isCancelled else {return}
+        result = block?(State(operation: self))
+        block = nil
+    }
 }
