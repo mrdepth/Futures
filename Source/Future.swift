@@ -618,7 +618,6 @@ final public class PromisedOperation<T>: Operation {
         self.block = block
         super.init()
         completionBlock = { [weak self] in
-            print(self!.isFinished)
             guard let strongSelf = self else {
                 try? promise.fail(FutureError.cancelled)
                 return
